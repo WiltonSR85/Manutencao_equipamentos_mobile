@@ -1,14 +1,91 @@
 import 'package:flutter/material.dart';
-import '../services/equipamento_service.dart';
+import '../controllers/equipamento_controller.dart';
+import '../models/equipamento_model.dart';
+import './equipamento_form_view.dart';
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends StatefulWidget {
   const DashboardView({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> {
+  final _controller = EquipamentoController();
+  List<Equipamento> _equipamentos = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEquipamentos();
+  }
+
+  Future<void> _loadEquipamentos() async {
+    setState(() => _isLoading = true);
+    final equipamentos = await _controller.getEquipamentos();
+    setState(() {
+      _equipamentos = equipamentos;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _deleteEquipamento(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirmar exclusão'),
+        content: Text('Deseja realmente excluir este equipamento?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final success = await _controller.deleteEquipamento(id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Equipamento excluído com sucesso')),
+        );
+        _loadEquipamentos();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao excluir equipamento')),
+        );
+      }
+    }
+  }
+
+  void _navigateToForm({Equipamento? equipamento}) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EquipamentoFormView(equipamento: equipamento),
+      ),
+    );
+    if (result == true) {
+      _loadEquipamentos();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToForm(),
+        child: Icon(Icons.add),
+        tooltip: 'Adicionar Equipamento',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -32,43 +109,65 @@ class DashboardView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              const Text('Equipamentos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: EquipamentoService().getEquipamentos(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Text('Erro ao carregar equipamentos');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text('Nenhum equipamento encontrado');
-                  }
-                  final equipamentos = snapshot.data!;
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columns: [
-                        DataColumn(label: Text('ID')),
-                        DataColumn(label: Text('Nome')),
-                        DataColumn(label: Text('Modelo')),
-                        DataColumn(label: Text('Nº Série')),
-                        DataColumn(label: Text('Fabricante')),
-                        DataColumn(label: Text('Data Aquisição')),
-                      ],
-                      rows: equipamentos.map((e) {
-                        return DataRow(cells: [
-                          DataCell(Text(e['id']?.toString() ?? '')),
-                          DataCell(Text(e['nome'] ?? '')),
-                          DataCell(Text(e['modelo'] ?? '')),
-                          DataCell(Text(e['numero_serie'] ?? '')),
-                          DataCell(Text(e['fabricante'] ?? '')),
-                          DataCell(Text(e['data_aquisicao'] ?? '')),
-                        ]);
-                      }).toList(),
-                    ),
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Equipamentos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: _loadEquipamentos,
+                    tooltip: 'Atualizar',
+                  ),
+                ],
               ),
+              const SizedBox(height: 16),
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _equipamentos.isEmpty
+                      ? Text('Nenhum equipamento encontrado')
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columns: [
+                              DataColumn(label: Text('ID')),
+                              DataColumn(label: Text('Nome')),
+                              DataColumn(label: Text('Modelo')),
+                              DataColumn(label: Text('Nº Série')),
+                              DataColumn(label: Text('Fabricante')),
+                              DataColumn(label: Text('Data Aquisição')),
+                              DataColumn(label: Text('Status')),
+                              DataColumn(label: Text('Ações')),
+                            ],
+                            rows: _equipamentos.map((e) {
+                              return DataRow(cells: [
+                                DataCell(Text(e.id?.toString() ?? '')),
+                                DataCell(Text(e.nome)),
+                                DataCell(Text(e.modelo)),
+                                DataCell(Text(e.numeroSerie)),
+                                DataCell(Text(e.fabricante)),
+                                DataCell(Text(e.dataAquisicao)),
+                                DataCell(Text(e.status)),
+                                DataCell(
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.edit, size: 20),
+                                        onPressed: () => _navigateToForm(equipamento: e),
+                                        tooltip: 'Editar',
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                                        onPressed: () => _deleteEquipamento(e.id!),
+                                        tooltip: 'Excluir',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]);
+                            }).toList(),
+                          ),
+                        ),
             ],
           ),
         ),

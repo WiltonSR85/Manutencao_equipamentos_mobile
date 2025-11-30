@@ -1,14 +1,14 @@
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'auth_service.dart';
+import '../auth_service.dart';
 
-class EquipamentoService {
-  final String baseUrl = 'https://b48481dbc084.ngrok-free.app/api';
+class EquipamentoListService {
+  final String baseUrl = 'https://noisome-bernardine-hysteretic.ngrok-free.dev/api';
 
   Future<List<Map<String, dynamic>>> getEquipamentos() async {
     final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('acess_token');
+    String? token = prefs.getString('access_token');
     final url = Uri.parse('$baseUrl/equipamentos/');
     var response = await http.get(
       url,
@@ -18,12 +18,11 @@ class EquipamentoService {
       final List<dynamic> data = jsonDecode(response.body);
       return data.cast<Map<String, dynamic>>();
     } else if (response.statusCode == 401) {
-      // Token expirado, tente refresh
       print('Token expirado, tentando refresh...');
       final authService = AuthService();
       final refreshed = await authService.refreshToken();
       if (refreshed) {
-        token = prefs.getString('acess_token');
+        token = prefs.getString('access_token');
         response = await http.get(
           url,
           headers: {'Authorization': 'Bearer $token'},

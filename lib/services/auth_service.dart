@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = 'https://b48481dbc084.ngrok-free.app/api';
+  final String baseUrl = 'https://noisome-bernardine-hysteretic.ngrok-free.dev/api';
 
     Future<bool> login(String username, String password) async {
       final url = Uri.parse('$baseUrl/token/');
@@ -22,13 +22,13 @@ class AuthService {
 
     Future<void> saveTokens(String acess, String refresh) async {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('acess_token', acess);
+      await prefs.setString('access_token', acess);
       await prefs.setString('refresh_token', refresh);
     }
 
     Future<String?> getAcessToken() async {
       final prefs = await SharedPreferences.getInstance();
-      return prefs.getString('acess_token');
+      return prefs.getString('access_token');
     }
 
     Future<String?> getRefreshToken() async {
@@ -38,7 +38,7 @@ class AuthService {
 
     Future<void> logout() async {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('acess_token');
+      await prefs.remove('access_token');
       await prefs.remove('refresh_token');
     }
 
