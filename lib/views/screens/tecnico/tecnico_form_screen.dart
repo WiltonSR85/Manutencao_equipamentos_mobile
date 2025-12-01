@@ -14,7 +14,7 @@ class TecnicoFormScreen extends StatefulWidget {
 
 class _TecnicoFormScreenState extends State<TecnicoFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _controller = TecnicoContrller();
+  final _controller = TecnicoController();
 
   late TextEditingController _nomeController;
   late TextEditingController _especialidadeController;

@@ -13,7 +13,7 @@ class TecnicoListScreen extends StatefulWidget {
 }
 
 class _TecnicoListScreenState extends State<TecnicoListScreen> {
-  final _controller = TecnicoContrller();
+  final _controller = TecnicoController();
   List<Tecnico> _tecnicos = [];
   bool _isLoading = true;
 
