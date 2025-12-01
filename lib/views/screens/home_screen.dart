@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './equipamento/equipamento_list_screen.dart';
 import './peca/peca_list_screen.dart';
-import './funcionario/funcionario_list_screen.dart';
+import './tecnico/tecnico_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WelcomeScreen(),
     EquipamentoListScreen(),
     PecaListScreen(),
-    FuncionarioListScreen(),
+    TecnicoListScreen(),
   ];
 
   static const List<BottomNavigationBarItem> _navBarItems = <BottomNavigationBarItem>[
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.people),
-      label: 'Funcionários',
+      label: 'Técnicos',
     ),
   ];
 
@@ -101,7 +101,7 @@ class WelcomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             Text(
-              'Sua plataforma integrada para gerenciar equipamentos, peças e funcionários de forma eficiente.',
+              'Sua plataforma integrada para gerenciar equipamentos, peças e técnicos de forma eficiente.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -127,7 +127,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Use o menu de navegação abaixo para acessar as listas de Equipamentos, Peças e Funcionários.',
+                      'Use o menu de navegação abaixo para acessar as listas de Equipamentos, Peças e Técnicos.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
