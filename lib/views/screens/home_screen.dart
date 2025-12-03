@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import './equipamento/equipamento_list_screen.dart';
 import './peca/peca_list_screen.dart';
 import './tecnico/tecnico_list_screen.dart';
+import '../../services/auth_service.dart';
+import '../screens/login_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,6 +54,22 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(_navBarItems[_selectedIndex].label ?? 'Gerenciamento'),
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: () async {
+              await AuthService().logout();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginView()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Center(
         child: _screens.elementAt(_selectedIndex),
