@@ -25,7 +25,6 @@ class BaseListView<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header com container estilizado
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
@@ -46,17 +45,23 @@ class BaseListView<T> extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: onRefresh,
-                tooltip: 'Atualizar',
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: onRefresh,
+                  tooltip: 'Atualizar',
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         
-        // Estados melhorados (loading e empty)
         Expanded(
           child: isLoading
               ? Center(
@@ -99,12 +104,35 @@ class BaseListView<T> extends StatelessWidget {
                       ),
                     )
                   : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: columns,
-                        rows: data.map((item) {
-                          return DataRow(cells: rowBuilder(item, context));
-                        }).toList(),
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              headingRowColor: MaterialStateProperty.all(
+                                Theme.of(context).primaryColor.withOpacity(0.08),
+                              ),
+                              headingTextStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              dataRowHeight: 60,
+                              headingRowHeight: 56,
+                              columnSpacing: 24,
+                              horizontalMargin: 20,
+                              columns: columns,
+                              rows: data.map((item) {
+                                return DataRow(cells: rowBuilder(item, context));
+                              }).toList(),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
         ),
