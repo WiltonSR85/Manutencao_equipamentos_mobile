@@ -113,7 +113,11 @@ class BaseListView<T> extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: DataTable(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                dividerColor: Colors.grey[200],
+                              ),
+                              child: DataTable(
                               headingRowColor: MaterialStateProperty.all(
                                 Theme.of(context).primaryColor.withOpacity(0.08),
                               ),
@@ -126,15 +130,45 @@ class BaseListView<T> extends StatelessWidget {
                               headingRowHeight: 56,
                               columnSpacing: 24,
                               horizontalMargin: 20,
-                              columns: columns,
-                              rows: data.map((item) {
-                                return DataRow(cells: rowBuilder(item, context));
+                              dataTextStyle: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                              columns: columns.map((column) {
+                                return DataColumn(
+                                  label: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: column.label,
+                                  ),
+                                );
+                              }).toList(),
+                              rows: data.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final item = entry.value;
+                                
+                                return DataRow(
+                                  color: MaterialStateProperty.resolveWith<Color?>(
+                                    (Set<MaterialState> states) {
+                                      if (states.contains(MaterialState.hovered)) {
+                                        return Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.04);
+                                      }
+                                      if (index.isEven) {
+                                        return Colors.grey[50];
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  cells: rowBuilder(item, context),
+                                );
                               }).toList(),
                             ),
                           ),
                         ),
                       ),
                     ),
+                  ),
         ),
       ],
     );
