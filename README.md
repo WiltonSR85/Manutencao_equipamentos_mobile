@@ -80,7 +80,7 @@ Para mais detalhes sobre a API, consulte a [documentação Swagger](http://local
 
 ## Link do vídeo
 
-LINK: [Trabalho Final WEB I]()
+LINK: [Trabalho Final WEB I](https://youtu.be/hX5Ev-Yw5oA?si=jidtAhJRKytsO1Iv)
 
 ---
 
