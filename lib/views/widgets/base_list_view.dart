@@ -25,34 +25,89 @@ class BaseListView<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Lista de Itens',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        // Header com container estilizado
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.05),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
             ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: onRefresh,
-              tooltip: 'Atualizar',
-            ),
-          ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Lista de Itens',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: onRefresh,
+                tooltip: 'Atualizar',
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
-        isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data.isEmpty
-                ? Center(child: Text(emptyMessage, style: TextStyle(color: Colors.grey[600])))
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columns: columns,
-                      rows: data.map((item) {
-                        return DataRow(cells: rowBuilder(item, context));
-                      }).toList(),
-                    ),
+        
+        // Estados melhorados (loading e empty)
+        Expanded(
+          child: isLoading
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Carregando...',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
+                )
+              : data.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.inbox_outlined,
+                            size: 80,
+                            color: Colors.grey[300],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            emptyMessage,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: columns,
+                        rows: data.map((item) {
+                          return DataRow(cells: rowBuilder(item, context));
+                        }).toList(),
+                      ),
+                    ),
+        ),
       ],
     );
   }
